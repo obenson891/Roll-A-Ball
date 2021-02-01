@@ -6,17 +6,17 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 
-
 public class PlayerController : MonoBehaviour
 {
     public float speed = 0;
     public Text countText;
     public Text winText;
     public float explosionforce = 0;
-    private AudioSource audioData;
+    public AudioSource audioSource;
 
     private Rigidbody rb;
     private int count;
+
 
     // Start is called before the first frame update
     void Start()
@@ -25,10 +25,9 @@ public class PlayerController : MonoBehaviour
         count = 0;
         SetCountText();
         winText.text = "";
+        audioSource = gameObject.GetComponent<AudioSource>();
 
-        
-       
-        
+
     }
 
 
@@ -48,6 +47,7 @@ public class PlayerController : MonoBehaviour
             other.gameObject.SetActive(false);
             count = count + 1;
             SetCountText();
+            
         }
     }
 
@@ -55,14 +55,13 @@ public class PlayerController : MonoBehaviour
     {
 
         Vector3 vector = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
-            audioData = gameObject.AddComponent<AudioSource>();
-
-        audioData.Play(0);
-
+            
 
             countText.text = "Count: " + count.ToString();
         if (count >= 12)
         {
+
+            audioSource.Play();
             winText.text = "You Win!!!";
             rb.AddExplosionForce(1000, vector, 300);
         }
