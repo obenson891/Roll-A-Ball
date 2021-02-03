@@ -1,72 +1,75 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
-using System.Media;
+using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
-
-
+using TMPro;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 0;
-    public Text countText;
-    public Text winText;
-    public float explosionforce = 0;
-    public AudioSource audioSource;
+    public TextMeshProUGUI countText;
+    public GameObject winTextObject;
 
     private Rigidbody rb;
     private int count;
-
-
+    private float movementX;
+    private float movementY;
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         count = 0;
+
         SetCountText();
-        winText.text = "";
-        audioSource = gameObject.GetComponent<AudioSource>();
-
-
+        winTextObject.SetActive(false);
     }
 
-
-    private void FixedUpdate()
+    void OnMove(InputValue movementValue)
     {
-        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
-        
 
-        rb.AddForce(movement * speed);
-        rb.AddExplosionForce(40, movement, 7);
+        Vector2 movementVector = movementValue.Get<Vector2>();
+        movementX = movementVector.x;
+        movementY = movementVector.y;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        if (other.gameObject.CompareTag("Pick Up"))
+        if (Input.GetKeyDown("space"))
         {
-            other.gameObject.SetActive(false);
-            count = count + 1;
-            SetCountText();
-            
+            Vector3 jump = new Vector3(0.0f, 200.0f, 0.0f);
+            GetComponent<Rigidbody>().AddForce(jump);
         }
     }
-
     void SetCountText()
     {
-
-        Vector3 vector = new Vector3(Input.GetAxis("Horizontal"), 0.0f, Input.GetAxis("Vertical"));
-            
-
-            countText.text = "Count: " + count.ToString();
-        if (count >= 12)
+        countText.text = "Count: " + count.ToString();
+        if(count >= 18)
         {
-
-            audioSource.Play();
-            winText.text = "You Win!!!";
-            rb.AddExplosionForce(1000, vector, 300);
+            winTextObject.SetActive(true);
         }
     }
+   void FixedUpdate()
+    {
+        Vector3 movement = new Vector3(movementX, 0.0f, movementY);
 
 
+        rb.AddForce(movement * speed);
 
+       
+
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Pickup"))
+        {
+            other.gameObject.SetActive(false);
+            count++;
+            SetCountText();
+        }
+
+
+    }
+
+    
 }
