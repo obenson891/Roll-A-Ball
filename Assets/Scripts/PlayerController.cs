@@ -69,6 +69,8 @@ public class PlayerController : MonoBehaviour
     }
     void SetCountText()
     {
+
+        countText = new TextMeshProUGUI();
         countText.text = "Count: " + count.ToString();
         if(count >= 18)
         {
