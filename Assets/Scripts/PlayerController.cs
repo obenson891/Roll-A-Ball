@@ -4,29 +4,48 @@ using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
+using UnityEngine.Animations;
+
 public class PlayerController : MonoBehaviour
 {
     public float speed = 0;
     public TextMeshProUGUI countText;
     public GameObject winTextObject;
+    
 
     private Rigidbody rb;
+
     private int count;
     private float movementX;
     private float movementY;
+    public AudioSource sound;
+    
+    public Vector3 startPoint = new Vector3(0, 10, 0);
     // Start is called before the first frame update
     void Start()
     {
+        
         rb = GetComponent<Rigidbody>();
         count = 0;
-
+        
         SetCountText();
         winTextObject.SetActive(false);
+
+        
+        sound = gameObject.GetComponent<AudioSource>();
+
+        
+        rb.MovePosition(startPoint);
+
+        rb.useGravity = false;
+
     }
+
+    
 
     void OnMove(InputValue movementValue)
     {
-
+        
         Vector2 movementVector = movementValue.Get<Vector2>();
         movementX = movementVector.x;
         movementY = movementVector.y;
@@ -38,7 +57,15 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 jump = new Vector3(0.0f, 200.0f, 0.0f);
             GetComponent<Rigidbody>().AddForce(jump);
+            rb.useGravity = true;
+                
+            
+               
+            
         }
+
+
+       
     }
     void SetCountText()
     {
@@ -46,6 +73,9 @@ public class PlayerController : MonoBehaviour
         if(count >= 18)
         {
             winTextObject.SetActive(true);
+           
+            sound.Play();
+
         }
     }
    void FixedUpdate()
@@ -61,6 +91,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+       
+
+
         if (other.gameObject.CompareTag("Pickup"))
         {
             other.gameObject.SetActive(false);
@@ -68,8 +101,12 @@ public class PlayerController : MonoBehaviour
             SetCountText();
         }
 
+       
+
+
 
     }
 
-    
+
+
 }
